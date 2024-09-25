@@ -5,10 +5,6 @@ on:
     branches:
       - 'main'
       - 'develop'
-  pull_request:
-    branches:
-      - 'main'
-      - 'develop'
 
 jobs:
   build-image:
@@ -31,7 +27,7 @@ jobs:
         uses: bitshifted/git-auto-semver@v1
 
       - name: Use version
-        run: echo "Calculated version: v${{ steps.calculate-version.outputs.version-string }}"
+        run: echo "Calculated version:v${{ steps.calculate-version.outputs.version-string }}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -60,7 +56,6 @@ jobs:
           docker image push ${{ secrets.DOCKERHUB_USERNAME }}/container-technologies:v${{ steps.calculate-version.outputs.version-string }}
 
       - name: Open Pull Request
-        id: open-pr
         uses: devops-infra/action-pull-request@v0.5.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -68,25 +63,6 @@ jobs:
           target_branch: main
           title: Automatic Pull Request
           body: "This is an automatic pull request from the develop branch."
-          label: 'enhancement'
+          label: enhancement
           draft: false
           allow_no_diff: false
-
-      - name: Add Additional Labels
-        if: ${{ steps.open-pr.outputs.pull_request_url }}
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const pullRequestUrl = '${{ steps.open-pr.outputs.pull_request_url }}';
-            const pullRequestNumber = pullRequestUrl.split('/').pop();
-            const repositoryName = '${{ secrets.REPO_NAME }}';
-
-            await github.issues.addLabels({
-              owner: repositoryOwner,
-              repo: repositoryName,
-              issue_number: pullRequestNumber,
-              labels: ['auto-pr', 'enhancement']
-            });
-
-            console.log(`Labels added to PR #${pullRequestNumber}: auto-pr, enhancement`);
