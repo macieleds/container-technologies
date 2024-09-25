@@ -79,6 +79,13 @@ jobs:
             const repositoryOwner = '${{ secrets.REPO_OWNER }}';
             const repositoryName = '${{ secrets.REPO_NAME }}';
             const pullRequestNumber = context.payload.pull_request.number;
+            
+            if (!pullRequest) { 
+                console.log("No pull request context available.");
+                return;
+            }
+
+            const pullRequestNumber = pullRequest.number
 
             await github.issues.addLabels({
               owner: repositoryOwner,
