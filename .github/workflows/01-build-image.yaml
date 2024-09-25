@@ -31,7 +31,7 @@ jobs:
         uses: bitshifted/git-auto-semver@v1
 
       - name: Use version
-        run: echo "Calculated version:v${{ steps.calculate-version.outputs.version-string }}"
+        run: echo "Calculated version: v${{ steps.calculate-version.outputs.version-string }}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -88,3 +88,5 @@ jobs:
               issue_number: pullRequestNumber,
               labels: ['auto-pr', 'enhancement']
             });
+
+            console.log(`Labels added to PR #${pullRequestNumber}: auto-pr, enhancement`);
