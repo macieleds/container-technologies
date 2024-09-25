@@ -60,6 +60,7 @@ jobs:
           docker image push ${{ secrets.DOCKERHUB_USERNAME }}/container-technologies:v${{ steps.calculate-version.outputs.version-string }}
 
       - name: Open Pull Request
+        id: open-pr
         uses: devops-infra/action-pull-request@v0.5.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -72,20 +73,14 @@ jobs:
           allow_no_diff: false
 
       - name: Add Additional Labels
+        if: steps.open-pr.outputs.pull_request_number != ''
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const pullRequestNumber = '${{ steps.open-pr.outputs.pull_request_number }}';
             const repositoryOwner = '${{ secrets.REPO_OWNER }}';
             const repositoryName = '${{ secrets.REPO_NAME }}';
-            const pullRequestNumber = context.payload.pull_request.number;
-            
-            if (!pullRequest) { 
-                console.log("No pull request context available.");
-                return;
-            }
-
-            const pullRequestNumber = pullRequest.number
 
             await github.issues.addLabels({
               owner: repositoryOwner,
