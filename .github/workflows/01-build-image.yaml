@@ -5,6 +5,10 @@ on:
     branches:
       - 'main'
       - 'develop'
+  pull_request:
+    branches:
+      - 'main'
+      - 'develop'
 
 jobs:
   build-image:
@@ -76,7 +80,7 @@ jobs:
             const repositoryName = '${{ secrets.REPO_NAME }}';
             const pullRequestNumber = context.payload.pull_request.number;
 
-            github.issues.addLabels({
+            await github.issues.addLabels({
               owner: repositoryOwner,
               repo: repositoryName,
               issue_number: pullRequestNumber,
