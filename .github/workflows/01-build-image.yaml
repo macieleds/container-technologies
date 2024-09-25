@@ -26,7 +26,6 @@ jobs:
         id: calculate-version
         uses: bitshifted/git-auto-semver@v1
 
-        # https://github.com/marketplace/actions/git-automatic-semantic-versioning
       - name: Use version
         run: echo "Calculated version:v${{ steps.calculate-version.outputs.version-string }}"
 
@@ -64,8 +63,22 @@ jobs:
           target_branch: main
           title: Automatic Pull Request
           body: "This is an automatic pull request from the develop branch."
-          labels: |
-            - enhancement
-            - auto-pr
+          label: 'enhancement'
           draft: false
           allow_no_diff: false
+
+      - name: Add Additional Labels
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const repositoryOwner = '${{ secrets.REPO_OWNER }}';
+            const repositoryName = '${{ secrets.REPO_NAME }}';
+            const pullRequestNumber = context.payload.pull_request.number;
+
+            github.issues.addLabels({
+              owner: repositoryOwner,
+              repo: repositoryName,
+              issue_number: pullRequestNumber,
+              labels: ['auto-pr', 'enhancement']
+            });
