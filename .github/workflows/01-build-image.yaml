@@ -74,11 +74,10 @@ jobs:
 
       - name: Add Additional Labels
         if: steps.open-pr.outputs.pull_request_number != ''
-        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const pullRequestNumber = '${{ steps.open-pr.outputs.pull_request_number }}';
+            const pullRequestNumber = '${{ steps.open-pr.outputs.pull_request_url }}'.split('/').pop();
             const repositoryOwner = '${{ secrets.REPO_OWNER }}';
             const repositoryName = '${{ secrets.REPO_NAME }}';
 
